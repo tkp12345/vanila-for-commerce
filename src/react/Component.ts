@@ -13,16 +13,18 @@ export default class Component<Props extends PropsModel, State extends StateMode
     this.props = props // 컴포넌트에 전달된 속성
     this.state = {} as State // 컴포넌트의 상태를 저장
 
+    this.setup()
     this.mount()
     this.setEvent()
   }
 
+  setup() {}
   template() {
     return ''
   }
 
   /*
-       HTML 생성하고 이를 DOM에 적용 (상태가 변경될 때마다 호출)
+     HTML 생성하고 이를 DOM에 적용 (상태가 변경될 때마다 호출)
      */
   render() {
     const template = this.template()
