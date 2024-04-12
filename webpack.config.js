@@ -1,4 +1,3 @@
-
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -47,10 +46,13 @@ module.exports = () => {
     },
     output: { path: path.join(__dirname, './dist/src'), filename: '[name].js' },
     devtool: 'source-map',
-    //http-server 대한 webpack dev server 사용
     devServer: {
-      contentBase: path.join(__dirname, './dist/src'),
-      publicPath: '/',
+      static: {
+        directory: path.join(__dirname, './dist/src'),
+      },
+      devMiddleware: {
+        publicPath: '/',
+      },
       host: 'localhost',
       port: 8080,
       hot: true,
