@@ -2,6 +2,7 @@ import type { Product, PropsModel, StateModel } from '@/react/types/types'
 import Component from '@/react/Component'
 import Header from '@/components/Header'
 import './../index.css'
+import { router } from '@/react/Roter'
 
 interface ProductsState extends StateModel {
   products: any[]
@@ -9,7 +10,7 @@ interface ProductsState extends StateModel {
   page: number
   limit: number
   search: string
-  cartCount: string | number
+  cart: Product[]
   allProducts: Product[]
   filteredProducts: Product[]
   limitOptions: number[]
@@ -24,7 +25,7 @@ export default class Products extends Component<PropsModel, ProductsState> {
       page: 1,
       limit: 10,
       search: '',
-      cartCount: 0,
+      cart: JSON.parse(localStorage.getItem('cart') || '[]'),
       allProducts: [],
       filteredProducts: [],
       limitOptions: [10, 20, 30], // 페이지당 제품 개수 선택 옵션
@@ -33,12 +34,6 @@ export default class Products extends Component<PropsModel, ProductsState> {
 
   componentDidMount() {
     this.fetchProducts()
-    const cartCount = localStorage.getItem('cartCount') || '0'
-    this.setState({
-      cartCount: parseInt(cartCount, 10),
-    })
-    const $header = this.$target.querySelector('header')
-    new Header($header as Element, { prevCount: this.state.cartCount })
   }
 
   async fetchProducts() {
@@ -85,8 +80,11 @@ export default class Products extends Component<PropsModel, ProductsState> {
   }
 
   template() {
-    const { filteredProducts, page, total, limit, limitOptions, search = '' } = this.state
+    const { filteredProducts, page, total, limit, limitOptions, search = '', cart } = this.state
+    const cartCount = cart?.length || 0
     const totalPages = Math.ceil(total / limit)
+
+    // 개수 선택 필터
     const limitOptionsProducts =
       limitOptions &&
       limitOptions
@@ -97,25 +95,28 @@ export default class Products extends Component<PropsModel, ProductsState> {
         )
         .join('')
 
+    // 검색 필터
     const searchProducts = `
           <input type="text" class="search-input" placeholder="검색어를 입력하세요" value=${search}>
             <button class="search-button">검색</button>
     `
 
+    // 상품 리스트
     const productList =
       filteredProducts &&
       filteredProducts
         .map(
           (product) => `
-      <div class='product'>
-        <img src='${product.thumbnail}' alt='${product.title}' />
-        <h3>${product.title}</h3>
-        <p>$${product.price}</p>
-      </div>
+     <div class='product' data-id="${product.id}">
+    <img src="${product.thumbnail}" alt="${product.title}" />
+    <h3>${product.title}</h3>
+    <p>$${product.price}</p>
+  </div>
     `,
         )
         .join('')
 
+    // 페이지 네이션 버튼
     const pageButtons = Array.from(
       { length: totalPages },
       (_, i) => `
@@ -127,19 +128,24 @@ export default class Products extends Component<PropsModel, ProductsState> {
 
     return `
       <div class='main-page'>
+      <div class='header-section'>
         <h1>Products</h1>
-        <header></header>
+        <div class="cart-title">장바구니 <span>${cartCount}</span>  개</div>
+      </div>
         <div class="products-header-section">
           <select class="limit-select">
             ${limitOptionsProducts}
           </select>
+          
           <div class="search-container">
             ${searchProducts}
           </div>       
         </div>
+        
         <div class='products-container'>
           ${productList}
         </div>
+        
         <div class="pagination">
           ${pageButtons}
         </div>
@@ -151,6 +157,10 @@ export default class Products extends Component<PropsModel, ProductsState> {
     this.addEvent('click', '.page-button', (event: MouseEvent) => {
       const page = Number((event.target as HTMLButtonElement).dataset.page)
       this.handlePageChange(page)
+    })
+
+    this.addEvent('click', '.cart-title', () => {
+      router.push(`/cart`)
     })
 
     this.addEvent('click', '.search-button', () => {
@@ -171,6 +181,15 @@ export default class Products extends Component<PropsModel, ProductsState> {
       const target = event.target as HTMLSelectElement // HTMLSelectElement로 타입 캐스팅
       const limit = Number(target.value)
       this.handleLimitChange(limit)
+    })
+
+    this.addEvent('click', '.product', (event: MouseEvent) => {
+      const productElement = (event.target as HTMLElement).closest('.product') as HTMLElement
+      // 찾은 요소에서 data-id 속성을 읽습니다.
+      const productId = productElement ? productElement.dataset.id : null
+      if (productId) {
+        router.push(`/product/${productId}`)
+      }
     })
   }
 }
