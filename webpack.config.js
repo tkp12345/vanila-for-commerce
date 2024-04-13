@@ -1,6 +1,6 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = () => {
   return {
@@ -25,7 +25,7 @@ module.exports = () => {
         },
         {
           test: /\.(css|scss)$/,
-          use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+          use: [MiniCssExtractPlugin.loader, 'css-loader'],
         },
       ],
     },
@@ -39,7 +39,7 @@ module.exports = () => {
     optimization: { minimize: true },
     resolve: {
       modules: ['node_modules'],
-      extensions: ['.ts', '.js', '.json', '.scss'],
+      extensions: ['.ts', '.js', '.json', 'css'],
       alias: {
         '@': path.join(__dirname, 'src'),
       },
@@ -59,5 +59,5 @@ module.exports = () => {
       open: true,
       historyApiFallback: true,
     },
-  };
-};
+  }
+}

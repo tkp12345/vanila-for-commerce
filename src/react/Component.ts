@@ -49,15 +49,18 @@ export default class Component<Props extends PropsModel, State extends StateMode
   /*
      state 관리 : 변한 state 만감지 (깊은복사)
      */
-  setState(newState: Partial<State>) {
+  setState(newState: Partial<State>, cb?: () => void) {
     const prevState = this.state
+    const updatedState = { ...prevState, ...newState }
 
-    const _state = { ...prevState, ...newState }
-    if (JSON.stringify(this.state) === JSON.stringify(_state)) {
-      return
+    // 비교를 위해 JSON 문자열화를 사용
+    if (JSON.stringify(this.state) !== JSON.stringify(updatedState)) {
+      this.state = updatedState
+      this.update()
+      if (cb) {
+        cb()
+      }
     }
-    this.state = _state
-    this.update()
   }
 
   /*
