@@ -18,8 +18,6 @@ export default class Cart extends Component<{}, CartState> {
   template() {
     const { cart } = this.state
     const cartCount = cart?.length || 0
-    console.log('cartCount:', cartCount)
-    console.log('cart:', cart)
 
     const cartList =
       cart &&
@@ -44,7 +42,7 @@ export default class Cart extends Component<{}, CartState> {
           <div class='cart-title-back' >
             <h1>◀ Cart</h1>
           </div>
-          <div class="cart-title">장바구니 <span>${cartCount}</span> 개</div>
+          <div>장바구니 <span>${cartCount}</span> 개</div>
         </div>
            <div class="cart-item-section">
           ${cartCount ? cartList : `<div>장바구니가 비어있습니다</div>`}
@@ -58,11 +56,7 @@ export default class Cart extends Component<{}, CartState> {
       router.back()
     })
 
-    this.addEvent('click', '.cart-title', () => {
-      router.push(`/cart`)
-    })
-
-    this.addEvent('click', '.remove-item', (event: MouseEvent) => {
+    this.addEvent('click', '.remove-item', (event: any) => {
       const target = event.target as HTMLElement
       const itemId = target.dataset.id
       if (!itemId) return

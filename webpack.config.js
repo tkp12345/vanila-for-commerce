@@ -44,7 +44,11 @@ module.exports = () => {
         '@': path.join(__dirname, 'src'),
       },
     },
-    output: { path: path.join(__dirname, './dist/src'), filename: '[name].js' },
+    output: {
+      path: path.join(__dirname, 'dist'),
+      publicPath: '/',
+      filename: '[name].bundle.js',
+    },
     devtool: 'source-map',
     devServer: {
       static: {

@@ -18,7 +18,6 @@ export default class Component<Props extends PropsModel, State extends StateMode
     this.setup()
     this.mount()
     this.setEvent()
-    console.log('Component-constructor:', $target)
   }
   setup() {}
 
@@ -93,24 +92,6 @@ export default class Component<Props extends PropsModel, State extends StateMode
     this.$target.addEventListener(eventType, eventFunction)
     this.boundEvents.set(eventType + selector, eventFunction)
   }
-
-  // addEvent(eventType: string, selector: string, handler: EventListener) {
-  //   const eventKey = eventType + selector
-  //   if (this.boundEvents.has(eventKey)) {
-  //     // 이미 이벤트 리스너가 등록되어 있는 경우 추가하지 않음
-  //     return
-  //   }
-  //
-  //   const eventFunction = (event: Event) => {
-  //     const targetElement = event.target as Element
-  //     if (targetElement.closest(selector)) {
-  //       handler(event)
-  //     }
-  //   }
-  //
-  //   this.$target.addEventListener(eventType, eventFunction)
-  //   this.boundEvents.set(eventKey, eventFunction)
-  // }
 
   removeEvent(eventType: string, selector: string) {
     if (this.boundEvents.has(eventType + selector)) {

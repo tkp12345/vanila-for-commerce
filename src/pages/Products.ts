@@ -1,6 +1,5 @@
 import type { Product, PropsModel, StateModel } from '@/react/types/types'
 import Component from '@/react/Component'
-import Header from '@/components/Header'
 import './../index.css'
 import { router } from '@/react/Roter'
 
@@ -32,7 +31,7 @@ export default class Products extends Component<PropsModel, ProductsState> {
     }
   }
 
-  componentDidMount() {
+  setup() {
     this.fetchProducts()
   }
 
@@ -154,7 +153,7 @@ export default class Products extends Component<PropsModel, ProductsState> {
   }
 
   setEvent() {
-    this.addEvent('click', '.page-button', (event: MouseEvent) => {
+    this.addEvent('click', '.page-button', (event: any) => {
       const page = Number((event.target as HTMLButtonElement).dataset.page)
       this.handlePageChange(page)
     })
@@ -169,7 +168,7 @@ export default class Products extends Component<PropsModel, ProductsState> {
       this.handleSearchChange(search)
     })
 
-    this.addEvent('keyup', '.search-input', (event: KeyboardEvent) => {
+    this.addEvent('keyup', '.search-input', (event: any) => {
       if (event.key === 'Enter') {
         const searchInput = this.$target.querySelector('.search-input') as HTMLInputElement
         const search = searchInput.value.trim()
@@ -183,9 +182,8 @@ export default class Products extends Component<PropsModel, ProductsState> {
       this.handleLimitChange(limit)
     })
 
-    this.addEvent('click', '.product', (event: MouseEvent) => {
+    this.addEvent('click', '.product', (event: any) => {
       const productElement = (event.target as HTMLElement).closest('.product') as HTMLElement
-      // 찾은 요소에서 data-id 속성을 읽습니다.
       const productId = productElement ? productElement.dataset.id : null
       if (productId) {
         router.push(`/product/${productId}`)

@@ -15,12 +15,11 @@ class Router {
     [key: string]: typeof Component
   } = {}
   initUrl: string = '/'
-  eventsBound: boolean = false
+  static instance: Router | null = null
 
   constructor({ $app, routes, initUrl = '/' }: { $app: HTMLElement; routes: Route[]; initUrl?: string }) {
     this.$app = $app
     this.initUrl = initUrl.toLowerCase()
-    console.log('Component-constructor:', $app)
 
     routes.forEach((route: Route) => {
       this.routes[route.path] = route.page
@@ -29,6 +28,13 @@ class Router {
     this.initEvent()
   }
 
+  //라우터 중복 생성 방지
+  static getInstance(options: { $app: HTMLElement; routes: Route[] }): Router {
+    if (!Router.instance) {
+      Router.instance = new Router(options)
+    }
+    return Router.instance
+  }
   initEvent() {
     document.addEventListener('changedRoutes', this.onChangedUrlHandler.bind(this) as EventListener)
     window.addEventListener('popstate', this.onPopState.bind(this))
@@ -41,9 +47,10 @@ class Router {
     this.renderPage(path)
   }
 
-  onPopState(event: PopStateEvent) {
+  onPopState() {
     // 현재 URL을 기반으로 라우터의 상태를 업데이트하거나 페이지를 렌더링
     const path = window.location.pathname
+
     this.renderPage(path)
   }
 
@@ -69,7 +76,6 @@ class Router {
   //페이지 렌더링
   renderPage(path: string) {
     let route
-
     // 동적 라우팅 처리 (:id)
     const regex = /\w{1,}$/
     if (this.hasRoute(path)) {
@@ -108,11 +114,18 @@ export let router: {
 }
 
 export function initRouter(options: { $app: HTMLElement; routes: Route[] }): void {
-  const routerObj = new Router(options)
+  const routerInstance = Router.getInstance(options)
   const currentPath = window.location.pathname
   router = {
-    push: (path) => routerObj.push(path),
-    back: () => routerObj.back(),
+    push: (path) => routerInstance.push(path),
+    // back: () => routerInstance.back(),
+    back: () => {
+      // Prevent multiple renderPage calls when using router.back()
+      const path = window.location.pathname
+      if (currentPath !== path) {
+        routerInstance.back()
+      }
+    },
   }
 
   //초기화시 현재 브라우저의 url에 해당하는 경로로 페이지를 렌더링

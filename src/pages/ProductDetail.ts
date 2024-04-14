@@ -30,7 +30,6 @@ export default class ProductDetail extends Component<PropsModel, ProductDetailSt
     }
   }
 
-  // Implement the template method
   template() {
     const { product, cart } = this.state
     const cartCount = cart?.length || 0
@@ -40,10 +39,10 @@ export default class ProductDetail extends Component<PropsModel, ProductDetailSt
     return `
       <div class='product-detail'>
         <div class='header-section'>
-          <div class='product-title-back'>
+          <div class='product-product-detail-title-back'>
             <h1>◀ Product Details</h1>
           </div>
-        <div class='cart-title'>장바구니 <span>${cartCount}</span> 개</div>
+        <div class='cart-product-detail-title'>장바구니 <span>${cartCount}</span> 개</div>
         </div>
         <div class='products-detail-section'>
           <div class='product-detail-image'>
@@ -68,13 +67,9 @@ export default class ProductDetail extends Component<PropsModel, ProductDetailSt
   }
 
   setEvent() {
-    this.addEvent('click', '.product-title-back', () => {
-      router.back()
-    })
+    this.addEvent('click', '.product-product-detail-title-back', () => router.back())
 
-    this.addEvent('click', '.cart-title', () => {
-      router.push(`/cart`)
-    })
+    this.addEvent('click', '.cart-product-detail-title', () => router.push(`/cart`))
 
     this.addEvent('click', '.add-to-cart', () => {
       const inputElement = this.$target.querySelector('.product-quantity') as HTMLInputElement
@@ -89,7 +84,6 @@ export default class ProductDetail extends Component<PropsModel, ProductDetailSt
 
     const cart = JSON.parse(localStorage.getItem('cart') || '[]')
     const existIndex = cart.findIndex((item: any) => item.id === product.id)
-
     if (existIndex !== -1) {
       cart[existIndex].quantity += quantity
     } else {
@@ -99,5 +93,6 @@ export default class ProductDetail extends Component<PropsModel, ProductDetailSt
 
     localStorage.setItem('cart', JSON.stringify(cart))
     this.setState({ cart: cart })
+    alert(`해당상품 ${quantity}개가 장바구니에 추가되었습니다`)
   }
 }
