@@ -67,7 +67,7 @@ export default class ProductDetail extends Component<PropsModel, ProductDetailSt
   }
 
   setEvent() {
-    this.addEvent('click', '.product-product-detail-title-back', () => router.back())
+    this.addEvent('click', '.product-product-detail-title-back', () => window.history.back())
 
     this.addEvent('click', '.cart-product-detail-title', () => router.push(`/cart`))
 
@@ -93,6 +93,5 @@ export default class ProductDetail extends Component<PropsModel, ProductDetailSt
 
     localStorage.setItem('cart', JSON.stringify(cart))
     this.setState({ cart: cart })
-    alert(`해당상품 ${quantity}개가 장바구니에 추가되었습니다`)
   }
 }

@@ -15,6 +15,7 @@ class Router {
     [key: string]: typeof Component
   } = {}
   initUrl: string = '/'
+  currentPath: string = '' // 현재 경로를 저장하는 변수 추가
   static instance: Router | null = null
 
   constructor({ $app, routes, initUrl = '/' }: { $app: HTMLElement; routes: Route[]; initUrl?: string }) {
@@ -26,6 +27,8 @@ class Router {
     })
 
     this.initEvent()
+    this.currentPath = window.location.pathname // 현재 경로 초기화
+    this.renderPage(window.location.pathname)
   }
 
   //라우터 중복 생성 방지
@@ -42,16 +45,19 @@ class Router {
   //URL 변경시 호출
   onChangedUrlHandler(event: CustomEvent) {
     const path: string = event.detail.path
-    history.pushState(event.detail, '', path)
-
-    this.renderPage(path)
+    if (window.location.pathname !== path) {
+      history.pushState(event.detail, '', path)
+      this.renderPage(path)
+      this.currentPath = path // 현재 경로 갱신
+    }
   }
 
   onPopState() {
-    // 현재 URL을 기반으로 라우터의 상태를 업데이트하거나 페이지를 렌더링
     const path = window.location.pathname
-
-    this.renderPage(path)
+    if (this.currentPath !== path) {
+      this.renderPage(path)
+      this.currentPath = path // 현재 경로 갱신
+    }
   }
 
   hasRoute(path: string) {
@@ -92,7 +98,6 @@ class Router {
       const pageInstance = new route(this.$app, {})
       pageInstance.render()
     } catch (error) {
-      console.error('Routing error:', error)
       this.renderErrorPage() // 오류 페이지 렌더링
     }
   }
@@ -103,14 +108,10 @@ class Router {
       path,
     })
   }
-  back() {
-    window.history.back()
-  }
 }
 
 export let router: {
   push: (path: string) => void
-  back: () => void
 }
 
 export function initRouter(options: { $app: HTMLElement; routes: Route[] }): void {
@@ -118,14 +119,6 @@ export function initRouter(options: { $app: HTMLElement; routes: Route[] }): voi
   const currentPath = window.location.pathname
   router = {
     push: (path) => routerInstance.push(path),
-    // back: () => routerInstance.back(),
-    back: () => {
-      // Prevent multiple renderPage calls when using router.back()
-      const path = window.location.pathname
-      if (currentPath !== path) {
-        routerInstance.back()
-      }
-    },
   }
 
   //초기화시 현재 브라우저의 url에 해당하는 경로로 페이지를 렌더링

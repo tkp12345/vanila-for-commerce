@@ -1,6 +1,5 @@
 import type { Product, StateModel } from '@/react/types/types'
 import Component from '@/react/Component'
-import { router } from '@/react/Roter'
 
 interface CartState extends StateModel {
   cart: Product[]
@@ -53,7 +52,7 @@ export default class Cart extends Component<{}, CartState> {
 
   setEvent() {
     this.addEvent('click', '.cart-title-back', () => {
-      router.back()
+      window.history.back()
     })
 
     this.addEvent('click', '.remove-item', (event: any) => {
