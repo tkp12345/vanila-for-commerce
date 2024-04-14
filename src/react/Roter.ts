@@ -15,10 +15,12 @@ class Router {
     [key: string]: typeof Component
   } = {}
   initUrl: string = '/'
+  eventsBound: boolean = false
 
   constructor({ $app, routes, initUrl = '/' }: { $app: HTMLElement; routes: Route[]; initUrl?: string }) {
     this.$app = $app
     this.initUrl = initUrl.toLowerCase()
+    console.log('Component-constructor:', $app)
 
     routes.forEach((route: Route) => {
       this.routes[route.path] = route.page
@@ -42,7 +44,6 @@ class Router {
   onPopState(event: PopStateEvent) {
     // 현재 URL을 기반으로 라우터의 상태를 업데이트하거나 페이지를 렌더링
     const path = window.location.pathname
-    console.log(path)
     this.renderPage(path)
   }
 
@@ -54,29 +55,40 @@ class Router {
     return this.routes[path.toLowerCase()]
   }
 
+  renderErrorPage() {
+    this.$app.innerHTML = `
+    <div class="error-page">
+      <p>요청하신 페이지에 접근할 수 없거나 오류가 발생했습니다.</p>
+      <button id="go-home">메인 페이지로 돌아가기</button>
+    </div>
+  `
+    document.getElementById('go-home')?.addEventListener('click', () => {
+      this.push('/')
+    })
+  }
   //페이지 렌더링
   renderPage(path: string) {
     let route
 
     // 동적 라우팅 처리 (:id)
     const regex = /\w{1,}$/
-    console.log('regex:', regex)
     if (this.hasRoute(path)) {
       route = this.getRoute(path)
     } else if (regex.test(path)) {
       // 동적 라우팅
       route = this.getRoute(path.replace(regex, ':id'))
-      console.log('동적 라우팅:', route)
     } else {
       // not found page
-      console.log('not found page:', route)
       route = this.getRoute(this.initUrl)
     }
-    console.log('?????:', route)
 
-    const pageInstance = new route(this.$app, {})
-    // 페이지 이동시 렌더되도록
-    pageInstance.render()
+    try {
+      const pageInstance = new route(this.$app, {})
+      pageInstance.render()
+    } catch (error) {
+      console.error('Routing error:', error)
+      this.renderErrorPage() // 오류 페이지 렌더링
+    }
   }
 
   push(path: string) {
@@ -86,7 +98,6 @@ class Router {
     })
   }
   back() {
-    console.log('back')
     window.history.back()
   }
 }
@@ -99,7 +110,6 @@ export let router: {
 export function initRouter(options: { $app: HTMLElement; routes: Route[] }): void {
   const routerObj = new Router(options)
   const currentPath = window.location.pathname
-  console.log('currentPath:', currentPath)
   router = {
     push: (path) => routerObj.push(path),
     back: () => routerObj.back(),
