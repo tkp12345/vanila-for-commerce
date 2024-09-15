@@ -1,5 +1,5 @@
 
-<h1 align="center">SPA 쇼핑몰 구현 과제
+<h1 align="center">SPA 쇼핑몰 구현 (only vanilla js)
 </h1>
 
 **** 
@@ -17,7 +17,6 @@
 >패키지구조
 
 ```
-jaranda_202312_박건욱
 ├
 ├─ src         
 │  ├─ pages       // ├─ 페이지(컴포넌트) 패키지
