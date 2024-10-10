@@ -160,8 +160,4 @@ renderPage(path: string) {
 
 </br>
 
-> 3. 과제 API - page , limit 필터조건 미지원
 
-과제 API(https://dummyjson.com/products) 에서 queryParam 으로
-필터들(page,limit)을 처리하려 했지만 지원을 하지 않는것처럼 보였습니다 </br>
- 그래서 100개의 데이터를 client 에서 호출하여 client 에서 자체적으로 조건에 맞게 필터 하였습니다
